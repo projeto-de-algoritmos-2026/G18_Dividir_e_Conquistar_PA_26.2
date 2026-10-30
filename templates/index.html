@@ -1,11 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Par de Pontos próximos</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Par de Pontos Mais Próximos</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Funcionando</h1>
+  <header>
+    <h1>Par de Pontos Mais Próximos</h1>
+    <p>Divisão e conquista em O(n log n). Clique no quadro para adicionar pontos.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <canvas id="canvas" width="900" height="560"></canvas>
+
+      <div class="toolbar">
+        <button id="btnClear">Limpar</button>
+        <input id="inputN" type="number" min="2" max="200" value="30" title="Quantidade de pontos">
+        <button id="btnRandom">Gerar aleatórios</button>
+        <button id="btnSolve" class="primary">Calcular</button>
+        <span class="sep"></span>
+        <button id="btnPrev" disabled>◀</button>
+        <button id="btnPlay" disabled>▶ Play</button>
+        <button id="btnNext" disabled>▶|</button>
+        <label>Velocidade <input id="speed" type="range" min="1" max="10" value="6"></label>
+      </div>
+
+      <div class="legend">
+        <span><i style="background:#2563eb"></i>metade esquerda</span>
+        <span><i style="background:#ea580c"></i>metade direita</span>
+        <span><i style="background:#7c3aed"></i>caso base</span>
+        <span><i style="background:#0891b2"></i>faixa (strip)</span>
+        <span><i style="background:#f59e0b"></i>comparação</span>
+        <span><i style="background:#dc2626"></i>melhor par atual</span>
+        <span><i style="background:#16a34a"></i>resultado final</span>
+      </div>
+    </section>
+
+    <aside>
+      <section class="card">
+        <div class="stats">
+          <div class="stat"><b id="statStep">0 / 0</b><span>passo</span></div>
+          <div class="stat"><b id="statComps">0</b><span>comparações</span></div>
+          <div class="stat"><b id="statDepth">–</b><span>profundidade</span></div>
+          <div class="stat"><b id="statDelta">–</b><span>δ atual</span></div>
+        </div>
+        <p id="stepInfo">Adicione pontos e clique em “Calcular”.</p>
+      </section>
+
+      <section class="card" id="results" hidden></section>
+
+    </aside>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
