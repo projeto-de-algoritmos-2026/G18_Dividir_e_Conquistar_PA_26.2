@@ -5,6 +5,7 @@ const g = canvas.getContext('2d');
 const W = canvas.width;    // tamanho INTERNO do desenho (900px)
 const H = canvas.height;   // (560px)
 const MAX_POINTS = 200;
+const MIN_POINTS = 2;
 
 let points = [];   // Lista de pontos [{x, y}] em coordenadas do canvas
 let events = [];   // Lista de eventos que será devolvida pelo backend
@@ -43,8 +44,14 @@ $('btnClear').addEventListener('click', () => {
 
 
   $('btnRandom').addEventListener('click', () => {
-  const n = Math.min(MAX_POINTS, Math.max(2, parseInt($('inputN').value, 10) || 30));
-  // Atualize o valor visual do input com o `n` validado:
+  const digitado = parseInt($('inputN').value, 10) || 30;
+  if (digitado > MAX_POINTS) {
+    alert(`Limite de ${MAX_POINTS} pontos na visualização.`);
+  }
+  else if (digitado < 2){
+    alert(`Limite de ${MIN_POINTS} pontos na visualização.`);
+  }
+  const n = Math.min(MAX_POINTS, Math.max(2, digitado));
   $('inputN').value = n;
   resetRun();
 
