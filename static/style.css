@@ -1,0 +1,35 @@
+:root {
+  --bg: #f6f7fb; --card: #ffffff; --ink: #0f172a; --muted: #64748b;
+  --primary: #4f46e5; --border: #e2e8f0;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); }
+header { max-width: 1280px; margin: 0 auto; padding: 28px 24px 4px; }
+h1 { margin: 0 0 4px; font-size: 1.7rem; }
+h3 { margin: 0 0 10px; }
+header p { margin: 0; color: var(--muted); }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; max-width: 1280px; margin: 16px auto 40px; padding: 0 24px; }
+aside { display: flex; flex-direction: column; gap: 20px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: 0 1px 3px rgba(15, 23, 42, .06); }
+#canvas { width: 100%; height: auto; display: block; background: #fff; border: 1px solid var(--border); border-radius: 12px; cursor: crosshair; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.sep { flex: 1; }
+button { font: inherit; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); background: #fff; cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--primary); }
+button.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+input[type=number], select { padding: 7px; border: 1px solid var(--border); border-radius: 10px; font: inherit; }
+input[type=number] { width: 72px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: .82rem; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
+.stat b { display: block; font-size: 1.3rem; }
+.stat span { color: var(--muted); font-size: .8rem; }
+#stepInfo { min-height: 70px; line-height: 1.5; margin: 0; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: 6px 4px; border-bottom: 1px solid var(--border); text-align: right; }
+th:first-child, td:first-child { text-align: left; }
+.note { color: var(--muted); font-size: .85rem; margin: 10px 0 0; }
+.chart-box { position: relative; height: 240px; margin-top: 12px; }
+@media (max-width: 900px) { main { grid-template-columns: 1fr; } }
