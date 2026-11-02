@@ -78,8 +78,12 @@ function updateControls() {
 
 // --- STUBS TEMPORÁRIOS: Substitutos de funções que serão feitas nas issues #9 e #10 ---
 // Apague esta parte quando chegar nessas issues.
-function pause() {}
+
+// function pause() {}
+
 function updateInfo() {}
+
+/*
 function draw() {
   g.clearRect(0, 0, W, H);
   points.forEach((p) => {
@@ -90,6 +94,7 @@ function draw() {
   });
 }
 draw();
+*/
 
 /* ====== Parte B — integração com a API ====== */
 async function solve() {
@@ -111,7 +116,7 @@ async function solve() {
     updateInfo();
 
     // Temporário: Desenha o final enquanto não temos animação
-    drawFinalOnly(data.dc.pair);
+    // drawFinalOnly(data.dc.pair);
     play();
   } catch (err) {
     alert(err.message);
@@ -136,9 +141,10 @@ function showResult(d) {
 }
 
 // --- TEMPORÁRIO (Apagaremos na issue #9) ---
-function play() {}
+// function play() {}
 
 // PLANO B VISUAL: mostra o par final sem animação
+/*
 function drawFinalOnly(pair) {
   g.clearRect(0, 0, W, H);
   const [a, b] = pair;
@@ -155,3 +161,124 @@ function drawFinalOnly(pair) {
     g.fill();
   });
 }
+*/
+
+/* ====== Parte C — player e desenho por evento ====== */
+function lastIndexOf(type, from) {
+  for (let i = from; i >= 0; i--) if (events[i].type === type) return i;
+  return -1;
+}
+
+function draw() {
+  g.clearRect(0, 0, W, H);
+  const e = k >= 0 ? events[k] : null;
+  const col = new Map();   // id do ponto -> cor
+  let lineX = null, band = null, order = null, seg = null, segColor = null;
+
+  if (e) {
+    switch (e.type) {
+      case 'divide':
+        lineX = e.line_x;
+        e.left.forEach((id) => col.set(id, C.left));
+        e.right.forEach((id) => col.set(id, C.right));
+        break;
+      case 'base_case':
+        e.ids.forEach((id) => col.set(id, C.base));
+        break;
+      case 'combine':
+        lineX = e.line_x;
+        band = { x: e.line_x, delta: e.delta };
+        seg = [e.best[0], e.best[1]];
+        segColor = C.best;
+        col.set(e.best[0], C.best);
+        col.set(e.best[1], C.best);
+        break;
+      case 'strip':
+        lineX = e.line_x;
+        band = { x: e.line_x, delta: e.delta };
+        order = e.ids;
+        e.ids.forEach((id) => col.set(id, C.strip));
+        break;
+      case 'compare':
+      case 'update_best': {
+        if (e.phase === 'strip') {
+          const s = events[lastIndexOf('strip', k)];
+          lineX = s.line_x;
+          band = { x: s.line_x, delta: s.delta };
+          order = s.ids;
+          s.ids.forEach((id) => col.set(id, C.strip));
+        } else {
+          events[lastIndexOf('base_case', k)].ids.forEach((id) => col.set(id, C.base));
+        }
+        segColor = e.type === 'update_best' ? C.best : C.compare;
+        seg = [e.a, e.b];
+        col.set(e.a, segColor);
+        col.set(e.b, segColor);
+        break;
+      }
+      case 'done':
+        seg = [e.a, e.b];
+        segColor = C.done;
+        col.set(e.a, C.done);
+        col.set(e.b, C.done);
+        break;
+    }
+  }
+
+  if (band) {
+    g.fillStyle = C.band;
+    g.fillRect(band.x - band.delta, 0, band.delta * 2, H);
+  }
+  if (lineX !== null) {
+    g.strokeStyle = C.line; g.lineWidth = 1.5; g.setLineDash([6, 4]);
+    g.beginPath(); g.moveTo(lineX, 0); g.lineTo(lineX, H); g.stroke();
+    g.setLineDash([]);
+  }
+  if (seg) {
+    const p = points[seg[0]], q = points[seg[1]];
+    g.strokeStyle = segColor; g.lineWidth = 3;
+    g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(q.x, q.y); g.stroke();
+  }
+  points.forEach((p, i) => {
+    g.beginPath();
+    g.arc(p.x, p.y, 6, 0, Math.PI * 2);
+    g.fillStyle = col.get(i) ?? (e ? C.dim : C.point);
+    g.fill();
+    g.strokeStyle = '#fff'; g.lineWidth = 1.5; g.stroke();
+  });
+  if (order) {
+    g.fillStyle = '#0f172a'; g.font = '11px system-ui';
+    order.forEach((id, n) => g.fillText(String(n + 1), points[id].x + 9, points[id].y - 8));
+  }
+}
+
+function delay() { return 1100 - Number($('speed').value) * 100; }  // 1..10 -> 1000..100 ms
+
+function goTo(i) {
+  k = Math.max(-1, Math.min(events.length - 1, i));
+  draw();
+  updateInfo();
+}
+
+function tick() {
+  goTo(k + 1);
+  if (k >= events.length - 1) { pause(); return; }
+  timer = setTimeout(tick, delay());
+}
+
+function play() {
+  if (!events.length) return;
+  if (k >= events.length - 1) k = -1;   // terminou? recomeça
+  $('btnPlay').textContent = '⏸ Pausar';
+  tick();
+}
+
+function pause() {
+  clearTimeout(timer);
+  timer = null;
+  $('btnPlay').textContent = '▶ Play';
+}
+
+$('btnPlay').addEventListener('click', () => (timer ? pause() : play()));
+$('btnNext').addEventListener('click', () => { pause(); goTo(k + 1); });$('btnPrev').addEventListener('click', () => { pause(); goTo(k - 1); });
+
