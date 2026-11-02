@@ -29,6 +29,10 @@ Este projeto apresenta uma visualização interativa do algoritmo clássico do *
 
 ---
 
+## Vídeo de Apresentação
+
+[Youtube](https://youtu.be/6hNaErCtkAE)
+
 ## Estrutura do Projeto
 
 - [`algoritmo.py`](algoritmo.py): Implementação do algoritmo de Divisão e Conquista (`closest_pair`) com suporte a gravação de eventos e do algoritmo de Força Bruta (`brute_force`).
