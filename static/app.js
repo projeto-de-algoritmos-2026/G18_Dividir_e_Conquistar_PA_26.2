@@ -81,7 +81,7 @@ function updateControls() {
 
 // function pause() {}
 
-function updateInfo() {}
+// function updateInfo() {}
 
 /*
 function draw() {
@@ -282,3 +282,49 @@ function pause() {
 $('btnPlay').addEventListener('click', () => (timer ? pause() : play()));
 $('btnNext').addEventListener('click', () => { pause(); goTo(k + 1); });$('btnPrev').addEventListener('click', () => { pause(); goTo(k - 1); });
 
+
+/* ====== Parte D — painel didático ====== */
+const f1 = (v) => (v === null || v === undefined ? '∞' : v.toFixed(1));
+
+function describe(e) {
+  switch (e.type) {
+    case 'start':
+      return `Início: ${e.n} pontos ordenados por x (desempate por y). A recursão vai dividir o conjunto ao meio.`;
+    case 'divide':
+      return `DIVIDIR (nível ${e.depth}): a linha L (x ≈ ${f1(e.line_x)}) separa ${e.left.length} pontos à esquerda (azul) e ${e.right.length} à direita (laranja).`;
+    case 'base_case':
+      return `CASO BASE (nível ${e.depth}): só ${e.ids.length} pontos, então compara todos os pares por força bruta.`;
+    case 'combine':
+      return `COMBINAR (nível ${e.depth}): δ₁ = ${f1(e.delta_left)} e δ₂ = ${f1(e.delta_right)}, logo δ = ${f1(e.delta)}. Falta checar os pares que cruzam L.`;
+    case 'strip':
+      return `FAIXA: ${e.ids.length} ponto(s) a menos de δ = ${f1(e.delta)} de L, numerados pela ordem de y. Só vizinhos com Δy < δ serão comparados.`;
+    case 'compare':
+      return `Compara os dois pontos destacados: distância ${f1(e.d)} ${e.delta === null || e.d < e.delta ? '→ melhora o melhor par!' : '≥ δ → descarta.'}`;
+    case 'update_best':
+      return `Novo melhor par deste subproblema: distância ${f1(e.d)}.`;
+    case 'done':
+      return `FIM: o par mais próximo está destacado em verde, distância ${f1(e.d)}.`;
+    default:
+      return '';
+  }
+}
+
+function currentDelta(e) {
+  if (['combine', 'strip', 'compare'].includes(e.type)) return e.delta;
+  if (e.type === 'update_best' || e.type === 'done') return e.d;
+  return null;
+}
+
+function updateInfo() {
+  const e = events[k];
+  $('stepInfo').textContent = e ? describe(e) : 'Adicione pontos e clique em “Calcular”.';
+  $('statStep').textContent = events.length ? `${k + 1} / ${events.length}` : '0 / 0';
+  $('statComps').textContent = e ? e.comps : 0;
+  $('statDepth').textContent = e && e.depth !== undefined ? e.depth : '–';
+  const d = e ? currentDelta(e) : null;
+  $('statDelta').textContent = d === null || d === undefined ? '–' : d.toFixed(1);
+}
+
+/* ====== Inicialização final da interface ====== */
+draw();
+updateControls();
