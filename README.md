@@ -4,7 +4,7 @@
 
 ### *Número da Lista*: 18  
 ### *Conteúdo da Disciplina*: Dividir e Conquistar
-### *Vídeo de Apresentação do Projeto:* [link]
+
 ---
 
 ## Estudantes
